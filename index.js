@@ -31,7 +31,6 @@ app.use("/book", Book);
 const { User } = require("./routes/user.rout");
 app.use("/user", User);
 
-// Server
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);

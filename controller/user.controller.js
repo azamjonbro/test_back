@@ -3,37 +3,46 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 
-const createUser = async (req, res) => {
+const createUser = async (req, res) => {    
     try {
-        const {
-            username,
-            password,
-            email,
-        } = req.body;
+        console.log(req?.body);
+        const { username, password, email } = req.body;
 
-        const ekstingUser = await User.findOne({ username });
+        if (!username || !password || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "Barcha maydonlar to'ldirilishi shart.",
+            });
+        }
 
-        console.log(ekstingUser);
+        const existingUser = await User.findOne({ username });
 
-        if (ekstingUser) {
+        if (existingUser) {
             return res.status(400).json({
                 success: false,
                 message: "Bu nom bilan ro'yxatdan o'tgan User mavjud.",
             });
-        } else {
-            const hashedPassword = await bcrypt.hash(password, 10)
-            const newUser = new User({
-                username,
-                password: hashedPassword,
-                email,
-                
-            });
-            await newUser.save();
-            return res.status(201).json({
-                success: true,
-                message: "Ro'yxatdan o'tish muvaffaqiyatli yakunlandi.",
-            });
         }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new User({
+            username,
+            password: hashedPassword,
+            email,
+        });
+
+        await newUser.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Ro'yxatdan o'tish muvaffaqiyatli yakunlandi.",
+            data: {
+                id: newUser._id,
+                username: newUser.username,
+                email: newUser.email,
+            },
+        });
     } catch (error) {
         console.error("Xato:", error);
         return res.status(500).json({

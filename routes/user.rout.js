@@ -20,13 +20,12 @@ const validateSchema = (schema) => (req, res, next) => {
 };
 
 const {
-    userValidationSchema,
     updateUserValidationSchema,
 
 } = require("../validations/user.validation");
 
 
-User.post("/createUser", validateSchema(userValidationSchema), createUser);
+User.post("/createUser", createUser);
 User.get("/getUsers", getUsers);
 User.get("/getUserById/:id", getUserById);
 User.put("/updateUser/:id", validateSchema(updateUserValidationSchema),updateUser);
